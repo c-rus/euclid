@@ -6,7 +6,7 @@
 
 import random
 
-SAMPLES = 100
+SAMPLES = 10_000
 
 LIMIT_LOWER = -512
 LIMIT_UPPER = 511
