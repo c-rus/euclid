@@ -4,9 +4,8 @@
 /// This file contains geometric primitives for performing computations in
 /// 2-dimensional space.
 
-mod primitives;
-
-pub mod convex;
+pub mod primitives;
+pub mod convex_hull;
 
 use primitives::Point;
 

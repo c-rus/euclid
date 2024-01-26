@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 /// Project: euclid
-/// Module: convex
+/// Module: convex_hull
 /// 
 /// This file contains geometric algorithms for computing the convex hull.
 
@@ -61,4 +61,58 @@ pub fn brute_force(points: &Vec<Point>) -> Vec<&Point> {
     }
 
     polygon
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn ut_brute_force_normal() {
+        let input = vec![
+            Point::from((0.0, 0.0)),
+            Point::from((2.0, 10.0)),
+            Point::from((5.0, 1.0)),
+            Point::from((2.0, 4.0)),
+            Point::from((3.0, 2.0)),
+        ];
+
+        let output = brute_force(&input);
+
+        assert_eq!(output,
+            vec![
+                &Point::from((0.0, 0.0)), 
+                &Point::from((5.0, 1.0)), 
+                &Point::from((2.0, 10.0))
+            ]
+        );
+    }
+
+    #[test]
+    fn ut_brute_force_collinear() {
+        let input = vec![
+            Point::from((0.0, 0.0)),
+            Point::from((6.0, 0.0)),
+            Point::from((5.0, 5.0)),
+            Point::from((3.0, 0.0)),
+            Point::from((4.0, 0.0)),
+            Point::from((1.0, 5.0)),
+            Point::from((2.0, 2.0)),
+        ];
+
+        let output = brute_force(&input);
+
+        assert_eq!(output,
+            vec![
+                &Point::from((0.0, 0.0)), 
+                &Point::from((3.0, 0.0)), 
+                &Point::from((4.0, 0.0)), 
+                &Point::from((6.0, 0.0)), 
+                &Point::from((5.0, 5.0)), 
+                &Point::from((1.0, 5.0))
+            ]
+        );
+    }
+
 }
