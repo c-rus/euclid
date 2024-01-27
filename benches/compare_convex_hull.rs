@@ -29,10 +29,11 @@ fn compare_convex_hulls(c: &mut Criterion) {
     group.bench_with_input("Brute Force (5)", &input, |b, points| b.iter(|| convex_hull::brute_force(points)));
     group.bench_with_input("Upper Lower (5)", &input, |b, points| b.iter(|| convex_hull::upper_lower(points)));
 
-    let input = sample_points(1_000);
-
-    group.bench_with_input("Brute Force (1000)", &input, |b, points| b.iter(|| convex_hull::brute_force(points)));
-    group.bench_with_input("Upper Lower (1000)", &input, |b, points| b.iter(|| convex_hull::upper_lower(points)));
+    for i in vec![1_000, 10_000] {
+        let input = sample_points(i);
+        group.bench_with_input(format!("Brute Force {}", i), &input, |b, points| b.iter(|| convex_hull::brute_force(points)));
+        group.bench_with_input(format!("Upper Lower {}", i), &input, |b, points| b.iter(|| convex_hull::upper_lower(points)));
+    }  
 }
 
 criterion_group!(benches, compare_convex_hulls);

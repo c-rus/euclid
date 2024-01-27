@@ -72,7 +72,9 @@ pub fn brute_force(points: &Vec<Point>) -> Vec<&Point> {
 /// order.
 /// 
 /// - Time complexity: O(n*log(n))
-pub fn upper_lower(points: &Vec<Point>) -> Vec<&Point> {
+pub fn upper_lower<'a>(points: &'a Vec<Point>) -> Vec<&'a Point> {
+
+
     // sort the points by increasing x-coordinate, and then increasing y-coordinate (if equal x-coordinate)
     let mut points: Vec<&Point> = points.iter().map(|e| e).collect();
     points.sort_by(|a, b| match a.x().partial_cmp(&b.x()).unwrap() {
@@ -80,55 +82,37 @@ pub fn upper_lower(points: &Vec<Point>) -> Vec<&Point> {
         Ordering::Greater => Ordering::Greater,
         Ordering::Less => Ordering::Less,
     });
+    
+    // define a closure to computer half a hull when traversing in clockwise order
+    let build_hull = |mut p_iter: Box<dyn Iterator<Item=&&'a Point>>| {
+        let mut hull: Vec<&'a Point> = vec![p_iter.next().unwrap(), p_iter.next().unwrap()];
+        // references to the previous two points in the polygon
+        let mut q = *hull.get(hull.len()-1).unwrap();
+        let mut p = *hull.get(hull.len()-2).unwrap();
+        // incrementally add points from right to left only maintaining right turns
+        while let Some(&r) = p_iter.next() {
+            if r == q { continue }
+            while hull.len() > 1 && direction(p, q, r) == Orientation::Left {
+                // delete the middle of the last three points
+                hull.pop();
+                if hull.len() == 1 {
+                    break;
+                }
+                q = *hull.get(hull.len()-1).unwrap();  
+                p = *hull.get(hull.len()-2).unwrap();
+            }
+            hull.push(r);        
+            // update references to the previous 2 points in the hull
+            q = *hull.get(hull.len()-1).unwrap();
+            p = *hull.get(hull.len()-2).unwrap();
+        }
+        hull
+    };
 
     // construct the upper hull
-    let mut p_iter = points.iter();
-    let mut upper: Vec<&Point> = vec![p_iter.next().unwrap(), p_iter.next().unwrap()];
-    // references to the previous two points in the polygon
-    let mut q = *upper.get(upper.len()-1).unwrap();
-    let mut p = *upper.get(upper.len()-2).unwrap();
-    // incrementally add points from left to right only maintaining right turns
-    while let Some(&r) = p_iter.next() {
-        if r == q { continue }
-        while upper.len() > 1 && direction(p, q, r) == Orientation::Left {
-            // delete the middle of the last three points
-            upper.pop();
-            if upper.len() == 1 {
-                break;
-            }
-            q = *upper.get(upper.len()-1).unwrap();
-            p = *upper.get(upper.len()-2).unwrap();
-        }
-        upper.push(r);
-        // update references to the previous 2 points in the hull
-        q = *upper.get(upper.len()-1).unwrap();
-        p = *upper.get(upper.len()-2).unwrap();
-    }
-
+    let upper = build_hull(Box::new(points.iter()));
     // construct the lower hull
-    let mut p_iter = points.iter().rev();
-    let mut lower: Vec<&Point> = vec![p_iter.next().unwrap(), p_iter.next().unwrap()];
-    // references to the previous two points in the polygon
-    let mut q = *lower.get(lower.len()-1).unwrap();
-    let mut p = *lower.get(lower.len()-2).unwrap();
-    // incrementally add points from right to left only maintaining right turns
-    while let Some(&r) = p_iter.next() {
-        if r == q { continue }
-        while lower.len() > 1 && direction(p, q, r) == Orientation::Left {
-            // delete the middle of the last three points
-            lower.pop();
-            if lower.len() == 1 {
-                break;
-            }
-            q = *lower.get(lower.len()-1).unwrap();  
-            p = *lower.get(lower.len()-2).unwrap();
-        }
-        lower.push(r);        
-        // update references to the previous 2 points in the hull
-        q = *lower.get(lower.len()-1).unwrap();
-        p = *lower.get(lower.len()-2).unwrap();
-    }
-
+    let lower = build_hull(Box::new(points.iter().rev()));
     // combine the two hulls and remove duplicate endpoints while in ccw order
     upper.into_iter().chain(lower.into_iter().skip(1).rev().skip(1).rev()).rev().collect()
 }
