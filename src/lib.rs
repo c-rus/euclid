@@ -6,6 +6,7 @@
 
 pub mod primitives;
 pub mod convex_hull;
+pub mod staircase;
 
 use primitives::Point;
 

@@ -74,7 +74,6 @@ pub fn brute_force(points: &Vec<Point>) -> Vec<&Point> {
 /// - Time complexity: O(n*log(n))
 pub fn upper_lower<'a>(points: &'a Vec<Point>) -> Vec<&'a Point> {
 
-
     // sort the points by increasing x-coordinate, and then increasing y-coordinate (if equal x-coordinate)
     let mut points: Vec<&Point> = points.iter().map(|e| e).collect();
     points.sort_by(|a, b| match a.x().partial_cmp(&b.x()).unwrap() {
