@@ -1,12 +1,17 @@
 # Project: euclid
 # Script: plot.py
+# Usage: python plot.py [FILE...]
 #
 # This script plots a series of points for visualization.
+#
+# The script determines how to graph the set of points based on the clues from
+# the file's name.
+# - "point": scatter plot
+# - "poly": draw as a series of connected points in order
+# - "stair": draw as a step function
 
 from matplotlib import pyplot as plt
-
-POINTS = 'data/points.txt'
-POLYGON = 'data/hull.txt'
+import sys
 
 
 def parse_points(fpath: str):
@@ -52,7 +57,13 @@ plt.title('Graph')
 plt.xlabel('X')
 plt.ylabel('Y')
 
-plt.scatter(*parse_points(POINTS), s=10)
-plt.plot(*parse_polygon(POLYGON), color='red')
+for path in sys.argv[1:]:
+    if path.count('point') > 0:
+        plt.scatter(*parse_points(path), s=10)
+    elif path.count('poly') > 0:
+        plt.plot(*parse_polygon(path), color='red')
+    elif path.count('stair') > 0:
+        plt.step(*parse_points(path), where='post', color='red')
+    pass
 
 plt.show()

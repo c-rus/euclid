@@ -23,7 +23,8 @@ pub fn staircase(points: &Vec<Point>) -> Vec<&Point> {
     // keep track off the bar
     let mut floor = stairpoints.get(0).unwrap().y();
     while let Some(&p) = p_iter.next() {
-        if p.y() >= floor {
+        // no other points can be above and to the right of extremal points
+        if p.y() > floor {
             stairpoints.push(p);
             // raise the floor
             floor = p.y();
