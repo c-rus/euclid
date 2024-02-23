@@ -34,7 +34,7 @@ def parse_points(fpath: str):
 
 def parse_polygon(fpath: str):
     '''
-    Returns a 2-D tupel containing the x and y coordinates.
+    Returns a 2-D tuple containing the x and y coordinates.
 
     The output of this function can be the input to `pyplot.plot(...)`.
     '''
@@ -53,17 +53,43 @@ def parse_polygon(fpath: str):
     return (x, y)
 
 
+def parse_rectangle(fpath: str):
+    '''
+    Returns a 2-D tuple containing the x and y coordinates.
+
+    The output of this function can be the input to `pyplot.plot(...)`.
+    '''
+    x = []
+    y = []
+    with open(fpath, 'r') as fd:
+        for line in fd.readlines():
+            t0, t1 = line.strip().split()
+            x += [float(t0)]
+            y += [float(t1)]
+        pass
+    # produce the final connections to enclose the polygon
+    x = [x[0], x[1], x[1], x[0], x[0]]
+    y = [y[0], y[0], y[1], y[1], y[0]]
+
+    return (x, y)
+
+
 plt.title('Graph')
 plt.xlabel('X')
 plt.ylabel('Y')
 
+colors_count = 0
+
 for path in sys.argv[1:]:
     if path.count('point') > 0:
-        plt.scatter(*parse_points(path), s=10)
+        plt.scatter(*parse_points(path), s=(20 - colors_count*10))
+        colors_count += 1
     elif path.count('poly') > 0:
         plt.plot(*parse_polygon(path), color='red')
     elif path.count('stair') > 0:
         plt.step(*parse_points(path), where='post', color='red')
+    elif path.count('range') > 0:
+        plt.plot(*parse_rectangle(path), color='red')
     pass
 
 plt.show()

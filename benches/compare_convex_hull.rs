@@ -1,14 +1,16 @@
-
 use euclid::primitives::Point;
 
 use criterion::{criterion_group, criterion_main, Criterion};
 use rand;
 
 /// Generate randomly sampled points as input to benchmarks.
-fn sample_points(size: usize) -> Vec<Point> {
+fn sample_points(size: usize) -> Vec<Point<f32>> {
     let mut points = Vec::new();
     for _i in 0..size {
-        points.push(Point::from((rand::random::<f32>() * 512.0, rand::random::<f32>() * 512.0)));
+        points.push(Point::from((
+            rand::random::<f32>() * 512.0,
+            rand::random::<f32>() * 512.0,
+        )));
     }
     points
 }
@@ -26,14 +28,22 @@ fn compare_convex_hulls(c: &mut Criterion) {
         Point::from((3.0, 2.0)),
     ];
 
-    group.bench_with_input("Brute Force (5)", &input, |b, points| b.iter(|| convex_hull::brute_force(points)));
-    group.bench_with_input("Upper Lower (5)", &input, |b, points| b.iter(|| convex_hull::upper_lower(points)));
+    group.bench_with_input("Brute Force (5)", &input, |b, points| {
+        b.iter(|| convex_hull::brute_force(points))
+    });
+    group.bench_with_input("Upper Lower (5)", &input, |b, points| {
+        b.iter(|| convex_hull::upper_lower(points))
+    });
 
     for i in vec![1_000, 10_000] {
         let input = sample_points(i);
-        group.bench_with_input(format!("Brute Force {}", i), &input, |b, points| b.iter(|| convex_hull::brute_force(points)));
-        group.bench_with_input(format!("Upper Lower {}", i), &input, |b, points| b.iter(|| convex_hull::upper_lower(points)));
-    }  
+        group.bench_with_input(format!("Brute Force {}", i), &input, |b, points| {
+            b.iter(|| convex_hull::brute_force(points))
+        });
+        group.bench_with_input(format!("Upper Lower {}", i), &input, |b, points| {
+            b.iter(|| convex_hull::upper_lower(points))
+        });
+    }
 }
 
 criterion_group!(benches, compare_convex_hulls);

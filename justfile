@@ -15,3 +15,11 @@ stairs PSET:
     python tools/sample.py {{PSET}} 10 > data/points.txt
     ./target/debug/euclid stairs data/points.txt data/stair.txt
     python tools/plot.py data/points.txt data/stair.txt
+
+
+# STRUCT is either: "kd" or "range"
+hw3p4 STRUCT N DIST:
+    cargo b
+    python tools/sample.py hw3p4 {{N}} {{DIST}} > data/points.txt
+    ./target/debug/euclid {{STRUCT}} data/points.txt data/range.txt data/points_out.txt
+    python tools/plot.py data/points.txt data/range.txt data/points_out.txt

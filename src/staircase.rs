@@ -1,17 +1,15 @@
 #![allow(dead_code)]
 /// Project: euclid
 /// Module: staircase
-/// 
+///
 /// This file contains geometric algorithms for computing the staircase of a
 /// given set of points.
-
 use crate::primitives::*;
 use std::cmp::Ordering;
 
-
-pub fn staircase(points: &Vec<Point>) -> Vec<&Point> {
+pub fn staircase(points: &Vec<Point<f32>>) -> Vec<&Point<f32>> {
     // sort the points in decreasing x-coordinate
-    let mut points: Vec<&Point> = points.iter().map(|e| e).collect();
+    let mut points: Vec<&Point<f32>> = points.iter().map(|e| e).collect();
     points.sort_by(|a, b| match b.x().partial_cmp(&a.x()).unwrap() {
         Ordering::Equal => a.y().partial_cmp(&b.y()).unwrap(),
         Ordering::Greater => Ordering::Greater,
@@ -34,7 +32,6 @@ pub fn staircase(points: &Vec<Point>) -> Vec<&Point> {
     stairpoints.into_iter().rev().collect()
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -53,7 +50,8 @@ mod tests {
 
         let output = staircase(&input);
 
-        assert_eq!(output,
+        assert_eq!(
+            output,
             vec![
                 &Point::from((0.0, 5.0)),
                 &Point::from((1.0, 4.0)),
