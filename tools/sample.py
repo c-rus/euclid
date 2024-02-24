@@ -7,6 +7,7 @@
 import random
 import sys
 from scipy import stats
+import math
 
 args = sys.argv
 
@@ -21,6 +22,12 @@ RANGE_FILE = 'data/range.txt'
 
 def rand_unique_points(low, high, n, dist: str, dtype):
     group = set()
+    X = None
+    Y = None
+    if dist == 'norm':
+        X = stats.norm(loc=0, scale=math.sqrt(81))
+        Y = stats.norm(loc=0, scale=math.sqrt(81))
+
     while True:
         if len(group) >= n:
             break
@@ -29,24 +36,18 @@ def rand_unique_points(low, high, n, dist: str, dtype):
             with open(RANGE_FILE, 'w') as f: f.write('1.0 4.0\n9.0 19.0\n')
             x = random.uniform(low, high)
             y = random.uniform(low, high)
-        if dist == 'binom':
-            # central to (0, 0)
-            with open(RANGE_FILE, 'w') as f: f.write('-10.0 -10.0\n10.0 -40.0\n')
-            x = stats.binom(n=int(high/2), p=0.5).rvs(size=1)[0] - high/4
-            y = stats.binom(n=int(high/2), p=0.5).rvs(size=1)[0] - high/4
             pass
-        if dist == 'geom':
-            with open(RANGE_FILE, 'w') as f: f.write('40.0 10.0\n150.0 90.0')
-            # central to (RANGE_L, RANGE_L)
-            x = stats.geom(p=0.05).rvs(size=1)[0] 
-            y = stats.geom(p=0.05).rvs(size=1)[0]
-
+        if dist == 'norm':
+            with open(RANGE_FILE, 'w') as f: f.write('10.0 10.0\n20.0 20.0\n')
+            x = X.rvs(size=1)[0]
+            y = Y.rvs(size=1)[0]
+            pass
         if dtype == int:
             x = int(x)
             y = int(y)
         elif dtype == float:
-            x = round(x, 5)
-            y = round(y, 5)
+            x = round(x, 6)
+            y = round(y, 6)
         
         if (x, y) in group:
             continue

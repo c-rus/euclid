@@ -30,6 +30,12 @@ hw3p4-uni:
     python tools/sample.py hw3p4 65536 uni > data/points65536uni.txt
     python tools/sample.py hw3p4 10000 uni > data/points10000uni.txt
 
+hw3p4-norm:
+    python tools/sample.py hw3p4 100 norm > data/points100norm.txt
+    python tools/sample.py hw3p4 1000 norm > data/points1000norm.txt
+    python tools/sample.py hw3p4 1000 norm > data/points10000norm.txt
+    python tools/sample.py hw3p4 65536 norm > data/points65536norm.txt
+    python tools/sample.py hw3p4 100000 norm > data/points100000norm.txt
 
 plot FILE:
     python tools/plot.py {{FILE}}
