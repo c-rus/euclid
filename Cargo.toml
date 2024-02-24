@@ -7,6 +7,10 @@ edition = "2021"
 name = "compare_convex_hull"
 harness = false
 
+[[bench]]
+name = "compare_range_query"
+harness = false
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

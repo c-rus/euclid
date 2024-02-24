@@ -3,12 +3,12 @@
 /// Module: kd_tree
 ///
 /// This file contains functions to construct and query a kd-tree data structure.
-
 use crate::primitives::*;
 use std::cmp::Ordering;
 
 type Child<T> = Option<Box<Node<T>>>;
 
+#[derive(Debug, PartialEq)]
 struct Node<T: Default + Copy> {
     data: Point<T>,
     left: Child<T>,
@@ -29,6 +29,7 @@ impl<T: Default + Copy> Node<T> {
     }
 }
 
+#[derive(Debug, PartialEq)]
 pub struct KdTree {
     root: Node<f32>,
 }
@@ -42,9 +43,9 @@ impl KdTree {
     }
 
     /// Recursive function call to build the levels of the kd-tree while alternating
-    /// axis coordinate sorting. 
-    /// 
-    /// At each level in the tree, the remaining subset of points are sorted 
+    /// axis coordinate sorting.
+    ///
+    /// At each level in the tree, the remaining subset of points are sorted
     /// according to the current axis under comparison.
     fn build(points: Vec<Point<f32>>, depth: usize) -> Node<f32> {
         match points.len() {
@@ -101,12 +102,86 @@ impl KdTree {
 
     /// Asks a rectangular range query question for the rectangle defined by
     /// `region`.
-    pub fn range_query(&self, region: Region<f32>) -> Vec<&Point<f32>> {
+    pub fn range_query(&self, region: &Region<f32>) -> Vec<&Point<f32>> {
         self.search_tree(&region, &self.root, Vec::new(), 0)
     }
 
     /// Searches a (sub)tree at the root `node` at the level `depth` in the kd-tree to decide which nodes
     /// to visit next and report the points fully contained in the `region`.
+    // fn search_tree<'a>(
+    //     &'a self,
+    //     region: &Region<f32>,
+    //     node: &'a Node<f32>,
+    //     mut result: Vec<&'a Point<f32>>,
+    //     depth: usize,
+    // ) -> Vec<&Point<f32>> {
+    //     match node.is_leaf() {
+    //         // add to the results if fully contained in R
+    //         true => {
+    //             if region.contains_point(&node.data) {
+    //                 // println!("KD {:?}", &node.data);
+    //                 result.push(&node.data);
+    //             }
+    //         }
+    //         // determine which direction to go down the tree
+    //         false => {
+    //             match depth % 2 == 0 {
+    //                 // check by x-coordinate (vertical line)
+    //                 true => {
+    //                     // decide if to traverse the left child (if it exists)
+    //                     if let Some(lc) = &node.left {
+    //                         if let Some(left_region) =
+    //                             &region.intersect_left_halfplane(node.data.x())
+    //                         {
+    //                             // investigate subtree further
+    //                             if region.intersects(left_region) == true {
+    //                                 result = self.search_tree(region, lc, result, depth + 1)
+    //                             }
+    //                         }
+    //                     }
+    //                     // decide if to traverse the right child (if it exists)
+    //                     if let Some(rc) = &node.right {
+    //                         if let Some(right_region) =
+    //                             &region.intersect_right_halfplane(node.data.x())
+    //                         {
+    //                             // // investigate subtree further
+    //                             if region.intersects(right_region) == true {
+    //                                 result = self.search_tree(region, rc, result, depth + 1)
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //                 // check by y-coordinate (horizontal line)
+    //                 false => {
+    //                     // decide if to traverse the left child (if it exists)
+    //                     if let Some(lc) = &node.left {
+    //                         if let Some(lower_region) =
+    //                             &region.intersect_lower_halfplane(node.data.y())
+    //                         {
+    //                             // investigate subtree further
+    //                             if region.intersects(lower_region) == true {
+    //                                 result = self.search_tree(region, lc, result, depth + 1)
+    //                             }
+    //                         }
+    //                     }
+    //                     // decide if to traverse the right child (if it exists)
+    //                     if let Some(rc) = &node.right {
+    //                         if let Some(upper_region) =
+    //                             &region.intersect_upper_halfplane(node.data.y())
+    //                         {
+    //                             // investigate subtree further
+    //                             if region.intersects(upper_region) == true {
+    //                                 result = self.search_tree(region, rc, result, depth + 1)
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     result
+    // }
+
     fn search_tree<'a>(
         &'a self,
         region: &Region<f32>,
@@ -115,24 +190,25 @@ impl KdTree {
         depth: usize,
     ) -> Vec<&Point<f32>> {
         match node.is_leaf() {
-            // add to the results if fully contained in R
+            // report the point that is stored in v
             true => {
-                if region.contains_point(&node.data) {
+                if region.contains_point(&node.data) == true {
                     result.push(&node.data);
                 }
-            }
-            // determine which direction to go down the tree
+            },
             false => {
                 match depth % 2 == 0 {
-                    // check by x-coordinate (vertical line)
+                    // split by vertical axis (x)
                     true => {
-                        // decide if to traverse the left child (if it exists)
                         if let Some(lc) = &node.left {
                             if let Some(left_region) =
                                 &region.intersect_left_halfplane(node.data.x())
                             {
+                                if region.strictly_contains(left_region) == true {
+                                    result = self.report_subtree(lc, result);
+                                }
                                 // investigate subtree further
-                                if region.intersects(left_region) == true {
+                                else if region.intersects(left_region) == true {
                                     result = self.search_tree(region, lc, result, depth + 1)
                                 }
                             }
@@ -142,22 +218,28 @@ impl KdTree {
                             if let Some(right_region) =
                                 &region.intersect_right_halfplane(node.data.x())
                             {
+                                if region.strictly_contains(right_region) == true {
+                                    result = self.report_subtree(rc, result);
+                                }
                                 // // investigate subtree further
-                                if region.intersects(right_region) == true {
+                                else if region.intersects(right_region) == true {
                                     result = self.search_tree(region, rc, result, depth + 1)
                                 }
                             }
                         }
-                    }
-                    // check by y-coordinate (horizontal line)
+                    },
+                    // split by horizontal axis (y)
                     false => {
                         // decide if to traverse the left child (if it exists)
                         if let Some(lc) = &node.left {
                             if let Some(lower_region) =
                                 &region.intersect_lower_halfplane(node.data.y())
                             {
+                                if region.strictly_contains(lower_region) == true {
+                                    result = self.report_subtree(lc, result);
+                                }
                                 // investigate subtree further
-                                if region.intersects(lower_region) == true {
+                                else if region.intersects(lower_region) == true {
                                     result = self.search_tree(region, lc, result, depth + 1)
                                 }
                             }
@@ -167,15 +249,18 @@ impl KdTree {
                             if let Some(upper_region) =
                                 &region.intersect_upper_halfplane(node.data.y())
                             {
+                                if region.strictly_contains(upper_region) == true {
+                                    result = self.report_subtree(rc, result);
+                                }
                                 // investigate subtree further
-                                if region.intersects(upper_region) == true {
+                                else if region.intersects(upper_region) == true {
                                     result = self.search_tree(region, rc, result, depth + 1)
                                 }
                             }
                         }
-                    }
+                    },
                 }
-            }
+            },
         }
         result
     }

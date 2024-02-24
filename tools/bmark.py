@@ -5,58 +5,51 @@
 # using matplotlib.
 
 from matplotlib import pyplot as plt
+import math
+
 
 units = 'µs'
 
 sample_sizes = [
     100,
-    200,
-    300,
-    400,
-    500,
-    600,
-    700,
-    800,
-    900,
-    1000,
+    1_000,
+    10_000,
+    65_536,
+    100_000,
 ]
 
-brute_force = [
-    147.9 * 1,
-    633.80 * 1,
-    1.4585 * 1_000,
-    2.9887 * 1_000,
-    4.9688 * 1_000,
-    4.9627 * 1_000,
-    7.6752 * 1_000,
-    11.942 * 1_000,
-    14.429 * 1_000,
-    15.756 * 1_000,
+kd_tree = [
+    315.47 * 0.001,
+    1.4884 * 1,
+    7.7223 * 1,
+    35.541 * 1,
+    64.157 * 1,
 ]
 
-upper_lower = [
-    5.1325 * 1,
-    8.9046 * 1,
-    15.426 * 1,
-    33.244 * 1,
-    37.911 * 1,
-    48.199 * 1,
-    55.925 * 1,
-    67.040 * 1,
-    81.943 * 1,
-    104.02 * 1,
+range_tree = [
+    165.24 * 0.001,
+    1.0399 * 1,
+    4.2857 * 1,
+    22.597 * 1,
+    36.846 * 1,
 ]
+
+# fn_loglog = [math.log2(n)**2 for n in sample_sizes]
+# fn_sqrt = [math.sqrt(n) for n in sample_sizes]
+
+# plt.plot(sample_sizes, fn_sqrt, label='${n^{1/2}}$')
+# plt.plot(sample_sizes, fn_loglog, label='${\log_2^{2}(n)}$')
 
 # create the plot along with the proper formatting
-plt.plot(sample_sizes, brute_force, label='brute-force')
-plt.plot(sample_sizes, upper_lower, label='upper-lower hull')
+plt.plot(sample_sizes, kd_tree, label='kd-tree')
+plt.plot(sample_sizes, range_tree, label='range-tree')
 
-plt.title('Convex Hull Benchmark Analysis')
-
-plt.yscale('log')
+plt.title('Range Query Big-O Analysis')
+plt.xscale('log')
 
 plt.xlabel('N (number of points)')
-plt.ylabel('Runtime ('+str(units)+')')
+# plt.ylabel('Execution time')
+plt.ylabel('Execution time ('+str(units)+')')
 
 plt.legend()
 plt.show()

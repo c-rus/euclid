@@ -36,6 +36,10 @@ impl<T: Default + Copy + std::cmp::PartialOrd> Region<T> {
             && r.r_y() <= self.r_y()
     }
 
+    pub fn strictly_contains(&self, r: &Region<T>) -> bool {
+        r.l_x() > self.l_x() && r.r_x() < self.r_x() && r.l_y() > self.l_y() && r.r_y() < self.r_y()
+    }
+
     /// Checks if a point `p` is fully contained within the region defined by `self`.
     pub fn contains_point(&self, p: &Point<T>) -> bool {
         p.x() >= self.l_x() && p.x() <= self.r_x() && p.y() >= self.l_y() && p.y() <= self.r_y()

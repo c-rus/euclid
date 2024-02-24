@@ -11,8 +11,8 @@ from scipy import stats
 args = sys.argv
 
 
-RANGE_L = -1_000
-RANGE_H = 1_000
+RANGE_L = 100
+RANGE_H = 0
 
 random.seed(999)
 
@@ -26,6 +26,7 @@ def rand_unique_points(low, high, n, dist: str, dtype):
             break
         if dist == 'uni':
             # central to (0, 0)
+            with open(RANGE_FILE, 'w') as f: f.write('1.0 4.0\n9.0 19.0\n')
             x = random.uniform(low, high)
             y = random.uniform(low, high)
         if dist == 'binom':
@@ -44,8 +45,8 @@ def rand_unique_points(low, high, n, dist: str, dtype):
             x = int(x)
             y = int(y)
         elif dtype == float:
-            x = round(x, 4)
-            y = round(y, 4)
+            x = round(x, 5)
+            y = round(y, 5)
         
         if (x, y) in group:
             continue
@@ -75,6 +76,12 @@ if FORM == 'points':
     pass
 elif FORM == 'hw3p4':
     # generate uniform points over range
+    # print('1.0 1.0')
+    # print('2.0 2.0')
+    # print('3.0 3.0')
+    # print('4.0 4.0')
+    # print('5.0 5.0')
+    # print('6.0 6.0')
     rand_unique_points(RANGE_L, RANGE_H, N, DIST, dtype=float)
     pass
 elif FORM == 'polygon':

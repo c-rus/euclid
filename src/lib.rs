@@ -6,6 +6,7 @@ pub mod kd_tree;
 /// This file contains geometric primitives for performing computations in
 /// 2-dimensional space.
 pub mod primitives;
+pub mod range_tree;
 pub mod staircase;
 
 use primitives::Point;

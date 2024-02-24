@@ -23,3 +23,13 @@ hw3p4 STRUCT N DIST:
     python tools/sample.py hw3p4 {{N}} {{DIST}} > data/points.txt
     ./target/debug/euclid {{STRUCT}} data/points.txt data/range.txt data/points_out.txt
     python tools/plot.py data/points.txt data/range.txt data/points_out.txt
+
+hw3p4-uni:
+    python tools/sample.py hw3p4 100 uni > data/points100uni.txt
+    python tools/sample.py hw3p4 1000 uni > data/points1000uni.txt
+    python tools/sample.py hw3p4 65536 uni > data/points65536uni.txt
+    python tools/sample.py hw3p4 10000 uni > data/points10000uni.txt
+
+
+plot FILE:
+    python tools/plot.py {{FILE}}

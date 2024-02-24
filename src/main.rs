@@ -1,5 +1,5 @@
 use euclid::primitives::Region;
-use euclid::{self, kd_tree::KdTree};
+use euclid::{self, kd_tree::KdTree, range_tree::RangeTree};
 use std::env;
 
 fn main() {
@@ -46,7 +46,22 @@ fn main() {
             // construct kd-tree
             let kd_tree = KdTree::construct(points);
             // perform range query on kd-tree
-            let result = kd_tree.range_query(region);
+            let result = kd_tree.range_query(&region);
+            // write results
+            euclid::write_points::<f32>(&args.next().unwrap(), result);
+        }
+        "range" => {
+            // read point set
+            let points = euclid::read_points::<f32>(&args.next().unwrap());
+            // read range
+            let region = {
+                let range = euclid::read_points::<f32>(&args.next().unwrap());
+                Region::new(*range.get(0).unwrap(), *range.get(1).unwrap())
+            };
+            // construct kd-tree
+            let range_tree = RangeTree::construct(points);
+            // perform range query on kd-tree
+            let result = range_tree.range_query(&region);
             // write results
             euclid::write_points::<f32>(&args.next().unwrap(), result);
         }
