@@ -129,90 +129,6 @@ impl RangeTree {
         self.search_tree(&region, &self.root, Vec::new())
     }
 
-    // fn search_tree<'a>(
-    //     &'a self,
-    //     region: &Region<f32>,
-    //     node: &'a Node<f32>,
-    //     mut result: Vec<&'a Point<f32>>,
-    // ) -> Vec<&Point<f32>> {
-    //     match node.is_leaf() {
-    //         true => {
-    //             match node.is_last_dimension() {
-    //                 true => {
-    //                     if region.contains_point(&node.data) == true {
-    //                         // println!("Y finally take node: {:?}", node.data);
-    //                         result.push(&node.data);
-    //                     }
-    //                 }
-    //                 false => {
-    //                     if node.data.x() >= region.l_x() && node.data.x() <= region.r_x() {
-    //                         result = self.search_tree(
-    //                             region,
-    //                             &node.next_dimension().as_ref().unwrap(),
-    //                             result,
-    //                         );
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         false => {
-    //             match node.is_last_dimension() {
-    //                 // report the points in this tree
-    //                 true => {
-    //                     // found a split node (y is within the range)
-    //                     if node.data.y() >= region.l_y() && node.data.y() <= region.r_y() {
-    //                         // go to neighbors
-    //                         if let Some(lc) = &node.left {
-    //                             result = self.search_tree(region, lc, result);
-    //                         }
-    //                         if let Some(rc) = &node.right {
-    //                             result = self.search_tree(region, rc, result);
-    //                         }
-    //                     }
-    //                     // too far left... try to go right
-    //                     else if node.data.y() < region.l_y() {
-    //                         if let Some(rc) = &node.right {
-    //                             result = self.search_tree(region, rc, result);
-    //                         }
-    //                     }
-    //                     // too far right... try to go left
-    //                     else if node.data.y() > region.r_y() {
-    //                         if let Some(lc) = &node.left {
-    //                             result = self.search_tree(region, lc, result);
-    //                         }
-    //                     }
-    //                 }
-    //                 // seek the next level at this node (find split-node)
-    //                 false => {
-    //                     // take the canonical subset at this node (go to next dimension here)
-    //                     if node.data.x() >= region.l_x() && node.data.x() <= region.r_x() {
-    //                         // go to neighbors
-    //                         // println!("take subset at: {:?}", node.data);
-    //                         result = self.search_tree(
-    //                             region,
-    //                             &node.next_dimension().as_ref().unwrap(),
-    //                             result,
-    //                         );
-    //                     }
-    //                     // too far left... try to go right
-    //                     else if node.data.x() < region.l_x() {
-    //                         if let Some(rc) = &node.right {
-    //                             result = self.search_tree(region, rc, result);
-    //                         }
-    //                     }
-    //                     // too far right... try to go left
-    //                     else if node.data.x() > region.r_x() {
-    //                         if let Some(lc) = &node.left {
-    //                             result = self.search_tree(region, lc, result);
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     result
-    // }
-
     fn find_split_node_x<'a>(node: &'a Node<f32>, min_x: f32, max_x: f32) -> &'a Node<f32> {
         let mut v = node;
         while v.is_leaf() == false && (v.data.x() > max_x || v.data.x() < min_x) {
@@ -239,24 +155,6 @@ impl RangeTree {
             }
         }
         v
-    }
-
-    /// Reports all nodes stored below `node` in the tree.
-    fn report_subtree<'a>(
-        &'a self,
-        node: &'a Node<f32>,
-        mut result: Vec<&'a Point<f32>>,
-    ) -> Vec<&Point<f32>> {
-        if node.is_leaf() == true {
-            result.push(&node.data);
-        }
-        if let Some(left) = &node.left {
-            result = self.report_subtree(left, result);
-        }
-        if let Some(right) = &node.right {
-            result = self.report_subtree(right, result);
-        }
-        result
     }
 
     fn range_query_1d<'a>(
@@ -357,6 +255,32 @@ impl RangeTree {
                 // check if the point stored in the leaf v must be reported
                 if region.contains_point(&v.data) == true {
                     result.push(&v.data);
+                }
+            }
+        }
+        result
+    }
+
+    /// Reports all nodes stored below `node` in the tree.
+    fn report_subtree<'a>(
+        &'a self,
+        node: &'a Node<f32>,
+        mut result: Vec<&'a Point<f32>>,
+    ) -> Vec<&Point<f32>> {
+        let mut stack = vec![node];
+        while stack.is_empty() == false {
+            let n = *stack.pop().as_ref().unwrap();
+            match n.is_leaf() {
+                true => {
+                    result.push(&n.data);
+                }
+                false => {
+                    if let Some(left) = &n.left {
+                        stack.push(left);
+                    }
+                    if let Some(right) = &n.right {
+                        stack.push(right);
+                    }
                 }
             }
         }

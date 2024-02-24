@@ -18,10 +18,7 @@ fn compare_range_query(c: &mut Criterion) {
 
     // the region for the uniform distribution
     let region = Region::new(Point::from((1.0, 4.0)), Point::from((9.0, 19.0)));
-    let region = Region::new(
-        Point::from((0.0, 0.0)),
-        Point::from((100.0, 100.0))
-    );
+    // let region = Region::new(Point::from((0.0, 0.0)), Point::from((100.0, 100.0)));
 
     for (i, filepath) in &sets {
         let points = euclid::read_points(filepath);

@@ -106,82 +106,6 @@ impl KdTree {
         self.search_tree(&region, &self.root, Vec::new(), 0)
     }
 
-    /// Searches a (sub)tree at the root `node` at the level `depth` in the kd-tree to decide which nodes
-    /// to visit next and report the points fully contained in the `region`.
-    // fn search_tree<'a>(
-    //     &'a self,
-    //     region: &Region<f32>,
-    //     node: &'a Node<f32>,
-    //     mut result: Vec<&'a Point<f32>>,
-    //     depth: usize,
-    // ) -> Vec<&Point<f32>> {
-    //     match node.is_leaf() {
-    //         // add to the results if fully contained in R
-    //         true => {
-    //             if region.contains_point(&node.data) {
-    //                 // println!("KD {:?}", &node.data);
-    //                 result.push(&node.data);
-    //             }
-    //         }
-    //         // determine which direction to go down the tree
-    //         false => {
-    //             match depth % 2 == 0 {
-    //                 // check by x-coordinate (vertical line)
-    //                 true => {
-    //                     // decide if to traverse the left child (if it exists)
-    //                     if let Some(lc) = &node.left {
-    //                         if let Some(left_region) =
-    //                             &region.intersect_left_halfplane(node.data.x())
-    //                         {
-    //                             // investigate subtree further
-    //                             if region.intersects(left_region) == true {
-    //                                 result = self.search_tree(region, lc, result, depth + 1)
-    //                             }
-    //                         }
-    //                     }
-    //                     // decide if to traverse the right child (if it exists)
-    //                     if let Some(rc) = &node.right {
-    //                         if let Some(right_region) =
-    //                             &region.intersect_right_halfplane(node.data.x())
-    //                         {
-    //                             // // investigate subtree further
-    //                             if region.intersects(right_region) == true {
-    //                                 result = self.search_tree(region, rc, result, depth + 1)
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //                 // check by y-coordinate (horizontal line)
-    //                 false => {
-    //                     // decide if to traverse the left child (if it exists)
-    //                     if let Some(lc) = &node.left {
-    //                         if let Some(lower_region) =
-    //                             &region.intersect_lower_halfplane(node.data.y())
-    //                         {
-    //                             // investigate subtree further
-    //                             if region.intersects(lower_region) == true {
-    //                                 result = self.search_tree(region, lc, result, depth + 1)
-    //                             }
-    //                         }
-    //                     }
-    //                     // decide if to traverse the right child (if it exists)
-    //                     if let Some(rc) = &node.right {
-    //                         if let Some(upper_region) =
-    //                             &region.intersect_upper_halfplane(node.data.y())
-    //                         {
-    //                             // investigate subtree further
-    //                             if region.intersects(upper_region) == true {
-    //                                 result = self.search_tree(region, rc, result, depth + 1)
-    //                             }
-    //                         }
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     result
-    // }
-
     fn search_tree<'a>(
         &'a self,
         region: &Region<f32>,
@@ -195,7 +119,7 @@ impl KdTree {
                 if region.contains_point(&node.data) == true {
                     result.push(&node.data);
                 }
-            },
+            }
             false => {
                 match depth % 2 == 0 {
                     // split by vertical axis (x)
@@ -227,7 +151,7 @@ impl KdTree {
                                 }
                             }
                         }
-                    },
+                    }
                     // split by horizontal axis (y)
                     false => {
                         // decide if to traverse the left child (if it exists)
@@ -258,9 +182,9 @@ impl KdTree {
                                 }
                             }
                         }
-                    },
+                    }
                 }
-            },
+            }
         }
         result
     }
@@ -271,14 +195,22 @@ impl KdTree {
         node: &'a Node<f32>,
         mut result: Vec<&'a Point<f32>>,
     ) -> Vec<&Point<f32>> {
-        if node.is_leaf() == true {
-            result.push(&node.data);
-        }
-        if let Some(left) = &node.left {
-            result = self.report_subtree(left, result);
-        }
-        if let Some(right) = &node.right {
-            result = self.report_subtree(right, result);
+        let mut stack = vec![node];
+        while stack.is_empty() == false {
+            let n = *stack.pop().as_ref().unwrap();
+            match n.is_leaf() {
+                true => {
+                    result.push(&n.data);
+                }
+                false => {
+                    if let Some(left) = &n.left {
+                        stack.push(left);
+                    }
+                    if let Some(right) = &n.right {
+                        stack.push(right);
+                    }
+                }
+            }
         }
         result
     }

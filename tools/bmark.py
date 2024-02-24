@@ -19,19 +19,19 @@ sample_sizes = [
 ]
 
 kd_tree = [
-    315.47 * 0.001,
-    1.4884 * 1,
-    7.7223 * 1,
-    35.541 * 1,
-    64.157 * 1,
+    305.65 * 0.001,
+    1.3954 * 1,
+    7.2284 * 1,
+    33.611 * 1,
+    53.944 * 1,
 ]
 
 range_tree = [
-    165.24 * 0.001,
-    1.0399 * 1,
-    4.2857 * 1,
-    22.597 * 1,
-    36.846 * 1,
+    126.81 * 0.001,
+    1.8521 * 1,
+    8.9364 * 1,
+    22.842 * 1,
+    27.417 * 1,
 ]
 
 # fn_loglog = [math.log2(n)**2 for n in sample_sizes]
@@ -44,7 +44,7 @@ range_tree = [
 plt.plot(sample_sizes, kd_tree, label='kd-tree')
 plt.plot(sample_sizes, range_tree, label='range-tree')
 
-plt.title('Range Query Big-O Analysis')
+plt.title('Range Query Time Analysis')
 plt.xscale('log')
 
 plt.xlabel('N (number of points)')
