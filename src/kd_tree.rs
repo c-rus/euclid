@@ -1,8 +1,8 @@
-#![allow(dead_code)]
 /// Project: euclid
 /// Module: kd_tree
 ///
-/// This file contains functions to construct and query a kd-tree data structure.
+/// This file contains functions to construct and query a kd-tree data
+/// structure.
 use crate::primitives::*;
 use std::cmp::Ordering;
 
@@ -106,6 +106,10 @@ impl KdTree {
         self.search_tree(&region, &self.root, Vec::new(), 0)
     }
 
+    /// Recursive function call that traverses down the (sub)tree from `node`
+    /// and evaluates the parallel axis according to the current `depth` to
+    /// collect the points that are contained within the rectangular range
+    /// `region`.
     fn search_tree<'a>(
         &'a self,
         region: &Region<f32>,
@@ -189,7 +193,8 @@ impl KdTree {
         result
     }
 
-    /// Reports all nodes stored below `node` in the tree.
+    /// Reports all leaves stored below `node` in the tree using an iterative
+    /// approach.
     fn report_subtree<'a>(
         &'a self,
         node: &'a Node<f32>,

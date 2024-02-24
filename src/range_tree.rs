@@ -1,8 +1,8 @@
-#![allow(dead_code)]
 /// Project: euclid
-/// Module: kd_tree
+/// Module: range_tree
 ///
-/// This file contains functions to construct and query a kd-tree data structure.
+/// This file contains functions to construct and query a range-tree data
+/// structure.
 use crate::primitives::*;
 use std::cmp::Ordering;
 
@@ -11,9 +11,9 @@ type Child<T> = Option<Box<Node<T>>>;
 #[derive(Debug, PartialEq)]
 struct Node<T: Default + Copy> {
     data: Point<T>,
+    left: Child<T>,
     // the associated structure (takes you to the next dimension!!)
     assoc: Child<T>,
-    left: Child<T>,
     right: Child<T>,
 }
 
@@ -129,6 +129,8 @@ impl RangeTree {
         self.search_tree(&region, &self.root, Vec::new())
     }
 
+    /// Traverses the (sub)tree rooted at `node` to return the vertex that is
+    /// within the bounds of the x-axis range.
     fn find_split_node_x<'a>(node: &'a Node<f32>, min_x: f32, max_x: f32) -> &'a Node<f32> {
         let mut v = node;
         while v.is_leaf() == false && (v.data.x() > max_x || v.data.x() < min_x) {
@@ -143,6 +145,8 @@ impl RangeTree {
         v
     }
 
+    /// Traverses the (sub)tree rooted at `node` to return the vertex that is
+    /// within the bounds of the y-axis range.
     fn find_split_node_y<'a>(node: &'a Node<f32>, min_y: f32, max_y: f32) -> &'a Node<f32> {
         let mut v = node;
         while v.is_leaf() == false && (v.data.y() > max_y || v.data.y() < min_y) {
@@ -157,6 +161,11 @@ impl RangeTree {
         v
     }
 
+    /// Performs a 1-dimensional range query on the (sub)tree rooted at `node`
+    /// to return all nodes contained within the range `region`.
+    ///
+    /// For the range-tree implementation, the 1-dimensional range query is
+    /// performed on the y-axis.
     fn range_query_1d<'a>(
         &'a self,
         node: &'a Node<f32>,
@@ -205,6 +214,10 @@ impl RangeTree {
         result
     }
 
+    /// Recursive function call that traverses down the (sub)tree from `node`
+    /// and selects the canonical subsets of the points that are defined within
+    /// the x-axis range. The selected subsets are chosen to conduct a 1D range
+    /// query along the y-axis range.
     fn search_tree<'a>(
         &'a self,
         region: &Region<f32>,
@@ -261,7 +274,8 @@ impl RangeTree {
         result
     }
 
-    /// Reports all nodes stored below `node` in the tree.
+    /// Reports all leaves stored below `node` in the tree using an iterative
+    /// approach.
     fn report_subtree<'a>(
         &'a self,
         node: &'a Node<f32>,

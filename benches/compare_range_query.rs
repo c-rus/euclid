@@ -17,7 +17,7 @@ fn compare_range_query(c: &mut Criterion) {
     // ];
     // the region for the uniform distribution
     // let region = Region::new(Point::from((1.0, 4.0)), Point::from((9.0, 19.0)));
-    
+
     let sets = vec![
         (100, "data/points100norm.txt"),
         (1_000, "data/points1000norm.txt"),
@@ -27,7 +27,7 @@ fn compare_range_query(c: &mut Criterion) {
     ];
     // the region for the normal distribution
     let region = Region::new(Point::from((10.0, 10.0)), Point::from((20.0, 20.0)));
-    
+
     // let region = Region::new(Point::from((0.0, 0.0)), Point::from((100.0, 100.0)));
 
     for (i, filepath) in &sets {
