@@ -11,6 +11,7 @@
 # - "stair": draw as a step function
 
 from matplotlib import pyplot as plt
+from matplotlib import collections  as mc
 import sys
 
 
@@ -74,6 +75,21 @@ def parse_rectangle(fpath: str):
     return (x, y)
 
 
+def parse_segments(fpath: str):
+    '''
+    Returns a list of disconnected line segments to plot.
+    '''
+    segs = []
+    with open(fpath, 'r') as fd:
+        for line in fd.readlines():
+            p0, q0 = line.strip().split(',')
+            p_x, p_y = p0.split()
+            q_x, q_y = q0.split()
+            segs += [((float(p_x), float(p_y)), (float(q_x), float(q_y)))]
+        pass
+    return segs
+
+
 plt.title('Graph')
 plt.xlabel('X')
 plt.ylabel('Y')
@@ -90,6 +106,14 @@ for path in sys.argv[1:]:
         plt.step(*parse_points(path), where='post', color='red')
     elif path.count('range') > 0:
         plt.plot(*parse_rectangle(path), color='red')
+    elif path.count('segments') > 0:
+        for seg in parse_segments(path):
+            print(seg)
+            plt.plot((seg[0][0], seg[1][0]), (seg[0][1], seg[1][1]), color='black')
+            plt.scatter(*seg[0], color='black')
+            plt.scatter(*seg[1], color='black')
+    elif path.count('box') > 0:
+        plt.plot(*parse_rectangle(path), color='black')
     pass
 
 plt.show()

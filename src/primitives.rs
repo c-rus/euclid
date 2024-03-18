@@ -213,11 +213,30 @@ impl<T: Default + Copy> Point<T> {
     }
 }
 
+impl std::fmt::Display for Point<f32> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {})", self.x(), self.y())
+    }
+}
+
 /// A line consisting of a start point and an end point.
+#[derive(Debug, PartialEq)]
 pub struct LineSegment(Point<f32>, Point<f32>);
 
+impl From<(Point<f32>, Point<f32>)> for LineSegment {
+    fn from(pair: (Point<f32>, Point<f32>)) -> Self {
+        Self(pair.0, pair.1)
+    }
+}
+
+impl std::fmt::Display for LineSegment {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{} to {}", self.0, self.1)
+    }
+}  
+
 impl LineSegment {
-    /// Returns the minimum value across the x-axis.
+    /// Returns the minimum value across the x-axis (left-most).
     pub fn x_min(&self) -> Coordinate {
         if &self.0.x() < &self.1.x() {
             self.0.x()
@@ -226,7 +245,7 @@ impl LineSegment {
         }
     }
 
-    /// Returns the maximum value across the x-axis.
+    /// Returns the maximum value across the x-axis (right-most).
     pub fn x_max(&self) -> Coordinate {
         if &self.0.x() > &self.1.x() {
             self.0.x()

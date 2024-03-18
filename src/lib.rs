@@ -1,15 +1,18 @@
 #![allow(dead_code)]
-pub mod convex_hull;
-pub mod kd_tree;
 /// Library: euclid
 ///
 /// This file contains geometric primitives for performing computations in
 /// 2-dimensional space.
+
+pub mod convex_hull;
+pub mod kd_tree;
 pub mod primitives;
 pub mod range_tree;
 pub mod staircase;
+pub mod point_loc;
 
 use primitives::Point;
+use primitives::LineSegment;
 use std::fmt::Debug;
 use std::str::FromStr;
 
@@ -44,4 +47,24 @@ pub fn write_points<T: std::default::Default + std::fmt::Display + Copy>(
     let contents: String = contents.iter().flat_map(|s| s.chars()).collect();
 
     std::fs::write(path, contents.as_bytes()).unwrap()
+}
+
+/// Opens and reads the file at `path` to parse its contents into a list
+/// of `Point` structures.
+pub fn read_segments(path: &str) -> Vec<LineSegment> {
+    let contents = std::fs::read_to_string(path).unwrap();
+
+    contents
+        .split('\n')
+        .filter(|s| s.len() > 0)
+        .map(|s| {
+            let pair = s.split_once(',').unwrap();
+            let p = pair.0.split_once(' ').unwrap();
+            let q = pair.1.split_once(' ').unwrap();
+            LineSegment::from((
+                Point::from((p.0.parse().unwrap(), p.1.parse().unwrap())),
+                Point::from((q.0.parse().unwrap(), q.1.parse().unwrap())),
+            ))
+        })
+        .collect()
 }

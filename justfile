@@ -16,6 +16,12 @@ stairs PSET:
     ./target/debug/euclid stairs data/points.txt data/stair.txt
     python tools/plot.py data/points.txt data/stair.txt
 
+trapmap:
+    cargo b
+    python tools/sample.py trapmap 0 > data/segments.txt
+    python tools/sample.py boundbox 0 > data/bbox.txt
+    ./target/debug/euclid trapmap data/segments.txt
+    python tools/plot.py data/segments.txt data/bbox.txt
 
 # STRUCT is either: "kd" or "range"
 hw3p4 STRUCT N DIST:
@@ -39,3 +45,4 @@ hw3p4-norm:
 
 plot FILE:
     python tools/plot.py {{FILE}}
+

@@ -88,6 +88,34 @@ elif FORM == 'hw3p4':
 elif FORM == 'polygon':
     exit(101)
     pass
+elif FORM == 'trapmap':
+    # lhs wall
+    print('1.0 10.0,2.0 8.0')
+    print('2.0 8.0,3.0 6.0')
+    print('3.0 6.0,4.0 4.0')
+    print('4.0 4.0,5.0 2.0')
+    print('5.0 2.0,13.0 2.0')
+    # rhs wall
+    print('13.0 2.0,14.0 4.0')
+    print('14.0 4.0,15.0 6.0')
+    print('15.0 6.0,16.0 8.0')
+    print('16.0 8.0,17.0 10.0')
+    # horizontal bars
+    print('1.0 10.0,17.0 10.0')
+    print('2.0 8.0,16.0 8.0')
+    print('3.0 6.0,15.0 6.0')
+    print('4.0 4.0,14.0 4.0')
+    # lower 'w' lines
+    print('4.0 4.0,7.0 2.5')
+    print('7.0 2.5,9.0 3.5')
+    print('9.0 3.5,11.0 2.5')
+    print('11.0 2.5,14.0 4.0')
+elif FORM == 'boundbox':
+    print('0.0 0.0')
+    #print('18.0 0.0')
+    print('18.0 12.0')
+    # print('0.0 12.0')
+
 elif FORM == 'points1':
     print('0.0 0.0')
     print('2.0 10.0')

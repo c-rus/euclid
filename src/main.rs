@@ -1,3 +1,4 @@
+use euclid::point_loc::trapezoidal_map;
 use euclid::primitives::Region;
 use euclid::{self, kd_tree::KdTree, range_tree::RangeTree};
 use std::env;
@@ -65,6 +66,13 @@ fn main() {
             // write results
             euclid::write_points::<f32>(&args.next().unwrap(), result);
         }
+        "trapmap" => {
+            // read line segments
+            let segments = euclid::read_segments(&args.next().unwrap());
+            // compute the trapezoidal map and search structure for the set of line segments
+            let result = trapezoidal_map(&segments);
+            todo!()
+        },
         _ => {
             panic!()
         }
